@@ -1,0 +1,62 @@
+name: Incursa Contributor Agreement
+description: Checks pull request contributors against a centralized contributor agreement signature store.
+author: Incursa
+
+inputs:
+  github-token:
+    description: Token for the repository receiving the pull request. Use secrets.GITHUB_TOKEN.
+    required: true
+  storage-token:
+    description: Token with read/write Contents permission for the private signature storage repository.
+    required: true
+  storage-owner:
+    description: Owner of the private signature storage repository.
+    required: true
+  storage-repo:
+    description: Name of the private signature storage repository.
+    required: true
+  storage-path:
+    description: JSON file path inside the storage repository.
+    required: false
+    default: signatures/incursa-contributor-agreement-v1.json
+  storage-branch:
+    description: Branch in the storage repository where signatures are stored.
+    required: false
+    default: main
+  agreement-id:
+    description: Stable identifier for the agreement version being signed.
+    required: false
+    default: incursa-contributor-agreement-v1
+  agreement-url:
+    description: Public URL of the contributor agreement document.
+    required: true
+  signature-comment:
+    description: Exact pull request comment text that records a signature.
+    required: false
+    default: I have read the Incursa Contributor Agreement and I hereby assign my contribution rights as described.
+  recheck-comment:
+    description: Pull request comment text that re-runs the check without recording a signature.
+    required: false
+    default: recheck contributor agreement
+  allowlist:
+    description: Comma-separated GitHub logins or wildcard patterns that do not need to sign.
+    required: false
+    default: dependabot[bot],github-actions[bot],renovate[bot]
+  status-context:
+    description: Commit status context to publish on the pull request head SHA.
+    required: false
+    default: Contributor Agreement
+  fail-on-unlinked-commit-author:
+    description: Whether commits that are not linked to a GitHub user should fail the check.
+    required: false
+    default: "true"
+
+outputs:
+  signed:
+    description: "true when every required contributor has signed."
+  missing:
+    description: Comma-separated GitHub logins still missing signatures.
+
+runs:
+  using: node20
+  main: src/main.js
