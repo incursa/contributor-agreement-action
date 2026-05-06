@@ -4,6 +4,7 @@ const test = require("node:test");
 const {
   buildFailureDescription,
   buildMissingComment,
+  buildSignatureRecord,
   buildSuccessComment,
   encodePath,
   matchesAllowlist,
@@ -63,6 +64,40 @@ test("comments include marker and exact signing phrase", () => {
 
 test("success comment includes marker", () => {
   assert.match(buildSuccessComment(), /<!-- incursa-contributor-agreement -->/);
+});
+
+test("signature records preserve the source comment audit fields", () => {
+  const record = buildSignatureRecord(
+    {
+      login: "octocat",
+      id: 583231,
+      htmlUrl: "https://github.com/octocat",
+    },
+    {
+      id: 12345,
+      html_url: "https://github.com/incursa/example/pull/7#issuecomment-12345",
+      body: "I have read the Incursa Contributor Agreement and I hereby assign my contribution rights as described.",
+      created_at: "2026-05-06T04:00:00Z",
+      updated_at: "2026-05-06T04:00:00Z",
+    },
+    {
+      fullName: "incursa/example",
+      number: 7,
+      htmlUrl: "https://github.com/incursa/example/pull/7",
+      headSha: "abcdef123456",
+    },
+    {
+      agreementId: "incursa-contributor-agreement-v1",
+      agreementUrl: "https://github.com/incursa/example/blob/main/CONTRIBUTOR-AGREEMENT.md",
+      signatureComment: "I have read the Incursa Contributor Agreement and I hereby assign my contribution rights as described.",
+    },
+    "2026-05-06T04:01:00Z",
+    "987654321");
+
+  assert.equal(record.source.commentBody, "I have read the Incursa Contributor Agreement and I hereby assign my contribution rights as described.");
+  assert.equal(record.source.commentCreatedAt, "2026-05-06T04:00:00Z");
+  assert.equal(record.source.commentUpdatedAt, "2026-05-06T04:00:00Z");
+  assert.equal(record.source.commentUrl, "https://github.com/incursa/example/pull/7#issuecomment-12345");
 });
 
 test("helpers normalize paths, booleans, and short SHAs", () => {

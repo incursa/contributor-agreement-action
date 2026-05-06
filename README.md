@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Check contributor agreement
-        uses: incursa/contributor-agreement-action@v0.1.0
+        uses: incursa/contributor-agreement-action@v0.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           storage-token: ${{ secrets.INCURSA_CONTRIBUTOR_AGREEMENTS_TOKEN }}
@@ -86,7 +86,7 @@ When a pull request is missing signatures, the action comments with the agreemen
 I have read the Incursa Contributor Agreement and I hereby assign my contribution rights as described.
 ```
 
-A contributor signs by posting that exact phrase as a pull request comment. The action records the GitHub login, GitHub user ID, agreement ID, agreement URL, source repository, pull request number, comment ID, and timestamp in the private JSON signature store.
+A contributor signs by posting that exact phrase as a pull request comment. The action records the GitHub login, GitHub user ID, agreement ID, agreement URL, source repository, pull request number, comment ID, comment URL, exact comment body, GitHub comment creation/update timestamps, workflow run ID, pull request head SHA, and signature timestamp in the private JSON signature store.
 
 The action checks the pull request author and linked GitHub commit authors. Bot accounts and maintainers can be bypassed through `allowlist`.
 

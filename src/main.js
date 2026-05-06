@@ -140,32 +140,45 @@ async function recordSignature(event, pullRequest, runtime) {
       return false;
     }
 
-    signatures.push({
-      github: {
-        login: signer.login,
-        id: signer.id,
-        htmlUrl: signer.htmlUrl,
-      },
-      agreement: {
-        id: runtime.agreementId,
-        url: runtime.agreementUrl,
-      },
-      signedAt: new Date().toISOString(),
-      signatureText: runtime.signatureComment,
-      source: {
-        repository: pullRequest.fullName,
-        pullRequest: pullRequest.number,
-        pullRequestUrl: pullRequest.htmlUrl,
-        commentId: event.comment.id,
-        commentUrl: event.comment.html_url,
-        workflowRunId: process.env.GITHUB_RUN_ID || "",
-        headSha: pullRequest.headSha,
-      },
-    });
+    signatures.push(buildSignatureRecord(
+      signer,
+      event.comment,
+      pullRequest,
+      runtime,
+      new Date().toISOString(),
+      process.env.GITHUB_RUN_ID || ""));
 
     signatures.sort(compareSignatures);
     return true;
   }, `Record ${signer.login}'s ${runtime.agreementId} signature`);
+}
+
+function buildSignatureRecord(signer, comment, pullRequest, runtime, signedAt, workflowRunId) {
+  return {
+    github: {
+      login: signer.login,
+      id: signer.id,
+      htmlUrl: signer.htmlUrl,
+    },
+    agreement: {
+      id: runtime.agreementId,
+      url: runtime.agreementUrl,
+    },
+    signedAt,
+    signatureText: runtime.signatureComment,
+    source: {
+      repository: pullRequest.fullName,
+      pullRequest: pullRequest.number,
+      pullRequestUrl: pullRequest.htmlUrl,
+      commentId: comment.id,
+      commentUrl: comment.html_url,
+      commentBody: comment.body,
+      commentCreatedAt: comment.created_at,
+      commentUpdatedAt: comment.updated_at,
+      workflowRunId,
+      headSha: pullRequest.headSha,
+    },
+  };
 }
 
 async function loadSignatureStore(runtime) {
@@ -565,6 +578,7 @@ function logError(error) {
 module.exports = {
   buildFailureDescription,
   buildMissingComment,
+  buildSignatureRecord,
   buildSuccessComment,
   encodePath,
   matchesAllowlist,
