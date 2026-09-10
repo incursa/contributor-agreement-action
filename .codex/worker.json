@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "name": "contributor-agreement-action",
+  "platform": {
+    "os": "debian",
+    "majorVersion": 13
+  },
+  "workingDirectory": ".",
+  "dependencies": {
+    "aptPackages": [
+      "ca-certificates",
+      "curl",
+      "git",
+      "nodejs"
+    ],
+    "codexCli": {
+      "install": true,
+      "updateOnBootstrap": true
+    },
+    "requiredCommands": [
+      {
+        "file": "node",
+        "versionArgs": ["--version"]
+      },
+      {
+        "file": "git",
+        "versionArgs": ["--version"]
+      },
+      {
+        "file": "codex",
+        "versionArgs": ["--version"]
+      }
+    ]
+  },
+  "commands": {
+    "bootstrap": [
+      {
+        "file": "node",
+        "args": ["--check", "src/main.js"]
+      }
+    ],
+    "test": [
+      {
+        "file": "node",
+        "args": ["--test"]
+      }
+    ]
+  },
+  "readiness": {
+    "codexAuthenticationRequired": true,
+    "packageInstallRequired": false
+  }
+}
